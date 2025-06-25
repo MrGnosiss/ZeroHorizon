@@ -1,36 +1,51 @@
-# zerohorizon.py
+# ZeroHorizon - Advanced Exploit Framework
+# Created by: Mr. Axolotl | Team: NulLNet
 
 import argparse
-import os
-from core import builder, shellgen, encoder, evader, pluginloader
-from utils import logger, banners
+from core.builder import PayloadBuilder
+from core.shellgen import ShellGenerator
+from core.encoder import Encoder
+from core.evader import EvasionEngine
+from core.pluginloader import PluginLoader
+from utils.logger import log
+from utils.banners import print_banner
 
 
 def main():
-    banners.print_banner()
-    logger.info("Welcome to ZeroHorizon - Modular Exploit Framework by Mr.Axolotl")
+    print_banner("ZeroHorizon")
 
-    parser = argparse.ArgumentParser(description="ZeroHorizon - Offensive Exploit Framework")
-    parser.add_argument('--build', help='Build custom payload', action='store_true')
-    parser.add_argument('--reverse-shell', help='Generate reverse shell', action='store_true')
-    parser.add_argument('--encode', help='Encode payload/shellcode', action='store_true')
-    parser.add_argument('--evade', help='Run EDR bypass techniques', action='store_true')
-    parser.add_argument('--plugins', help='List and run plugins', action='store_true')
+    parser = argparse.ArgumentParser(description="ZeroHorizon - Advanced Exploit Framework")
+    parser.add_argument("--mode", choices=["build", "shell", "encode", "evade", "plugin"], required=True, help="Mode to operate")
+    parser.add_argument("--input", help="Input for encoder/evader")
+    parser.add_argument("--plugin", help="Plugin name to load")
+    parser.add_argument("--output", help="Output file")
+    parser.add_argument("--type", help="Shell/Payload type")
+
     args = parser.parse_args()
 
-    if args.build:
-        builder.run()
-    elif args.reverse_shell:
-        shellgen.run()
-    elif args.encode:
-        encoder.run()
-    elif args.evade:
-        evader.run()
-    elif args.plugins:
-        pluginloader.run_plugins()
+    if args.mode == "build":
+        builder = PayloadBuilder()
+        builder.build(args.type, args.output)
+
+    elif args.mode == "shell":
+        shell = ShellGenerator()
+        shell.generate(args.type, args.output)
+
+    elif args.mode == "encode":
+        encoder = Encoder()
+        encoder.encode(args.input, args.output)
+
+    elif args.mode == "evade":
+        evader = EvasionEngine()
+        evader.bypass(args.input, args.output)
+
+    elif args.mode == "plugin":
+        plugin = PluginLoader()
+        plugin.load(args.plugin)
+
     else:
-        parser.print_help()
+        log("Invalid mode selected.", level="error")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
